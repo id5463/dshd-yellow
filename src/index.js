@@ -48,6 +48,22 @@ async function main(argv) {
     }
 
     case 'pack': {
+      if (o.kv['from-session']) {
+        const { exportFromSession } = require('./pack.js')
+        const r = await exportFromSession({
+          sessionId: o.kv['from-session'], base: o.kv.base,
+          name: o.kv.name, version: o.kv.version, license: o.kv.license,
+          out: o.kv.out, dshRange: o.kv['dsh-range'],
+        })
+        if (!r.ok) { if (o.json) emitJson({ ok: false, error: r.error, problems: r.problems }); else { console.error('导出失败: ' + r.error); if (r.problems && r.problems.length) console.log('  ' + r.problems.join('\n  ')) } return 1 }
+        if (o.json) emitJson({ ok: true, out: r.out, zip: r.zip, base: r.base, problems: r.problems })
+        else {
+          log('✅ 已从会话导出整合包: ' + r.out)
+          log('   基础模式: ' + r.base + ' (已打进 presets/)')
+          if (r.problems && r.problems.length) log('  ⚠ ' + r.problems.join('\n  ⚠ '))
+        }
+        return 0
+      }
       const r = await packPack({
         from: o.kv.from || o.kv.dir,
         out: o.kv.out,
