@@ -182,12 +182,21 @@ function applyPatches(packDir, log) {
   const file = path.join(packDir, 'patches.yaml')
   if (!fs.existsSync(file)) return { applied: false }
   const patchText = fs.readFileSync(file, 'utf8')
+  const patchBody = patchText.replace(/^#.*$/gm, '').trim()
+  if (patchBody === '' || patchBody === '[]') {
+    log('  组合补丁: 空, 跳过')
+    return { applied: false }
+  }
   const profileDir = path.join(dshHome(), 'profiles', 'web')
   const target = path.join(profileDir, 'cordis.patch.yml')
   backupFile(target)
   let current = ''
   try { current = fs.readFileSync(target, 'utf8') } catch (e) {}
-  const merged = (current.trim() === '[]' || current.trim() === '') ? patchText : current.trimEnd() + '\n' + patchText
+  // profile 补丁为空 (仅注释或 []) → 整体替换为包补丁; 否则把包补丁的列表条目追加到尾部
+  const body = current.replace(/^#.*$/gm, '').trim()
+  const merged = (body === '' || body === '[]')
+    ? (current.replace(/\n*\s*\[\]\s*$/, '\n') + patchText.replace(/^#.*$/gm, '').trim() + '\n')
+    : current.trimEnd() + '\n' + patchText.replace(/^#.*$/gm, '').trim() + '\n'
   fs.mkdirSync(profileDir, { recursive: true })
   fs.writeFileSync(target, merged)
   log('  ✅ 组合补丁已合并进 cordis.patch.yml (备份在 .yellow-bak)')

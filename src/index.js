@@ -30,7 +30,7 @@ function parseArgs(argv) {
   return out
 }
 
-function emitJson(obj) { console.log(JSON.stringify(obj, null, 1)) }
+function emitJson(obj) { console.log(JSON.stringify(obj)) }
 
 async function main(argv) {
   const o = parseArgs(argv)
@@ -90,7 +90,8 @@ async function main(argv) {
     case 'list': {
       const l = installed.readLedger()
       const packs = l.packs || []
-      if (o.json) emitJson({ ok: true, packs, skills: l.skills || [], mcp: l.mcp || [], plugins: l.plugins || [] })
+      const dshVer = await dshVersion().catch(() => null)
+      if (o.json) emitJson({ ok: true, dshVersion: dshVer, packs, skills: l.skills || [], mcp: l.mcp || [], plugins: l.plugins || [] })
       else {
         log('dshd Yellow — 已安装')
         if (!packs.length) log('  (还没有加载过整合包)')
