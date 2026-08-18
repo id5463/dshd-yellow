@@ -1,0 +1,31 @@
+{
+  "name": "dshd-yellow",
+  "version": "0.1.0",
+  "description": "dshd Yellow — the modpack tool for DeepSeek Harness (DSH). Pack and load DSH integration packs: a manifest that references skills, plugins, MCP servers, presets, models and soul — content is downloaded on demand, hash-verified, never duplicated.",
+  "main": "src/index.js",
+  "bin": {
+    "dshd-yellow": "bin/dshd-yellow.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "start": "node bin/dshd-yellow.js"
+  },
+  "keywords": [
+    "deepseek",
+    "dsh",
+    "harness",
+    "modpack",
+    "integration",
+    "pack",
+    "yellow"
+  ],
+  "author": "dshd contributors",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  }
+}
